@@ -32,3 +32,30 @@ END {
  rsync -av -P /data/ccorbett/reads/ fhernan@narval.calculcanada.ca:/home/fhernan/scratch/stiltgrass/
 
 ```
+
+## Calculate the mean +/- SD of coverage depth and number of variants for all .bam files in the current working directory
+
+```bash
+for bam in *.bam; do
+    sample=$(basename "$bam" .bam)
+    
+    # Compute mean and SD for depth
+    read mean_depth sd_depth <<< $(samtools depth "$bam" | 
+        awk '{sum+=$3; sumsq+=$3*$3} 
+             END { 
+                 if (NR>0) { 
+                     mean=sum/NR; 
+                     sd=sqrt(sumsq/NR - mean^2); 
+                     print mean, sd 
+                 } else { 
+                     print 0, 0 
+                 } 
+             }')
+
+    # Count non-zero covered sites as a proxy for SNPs
+    snp_count=$(samtools depth "$bam" | awk '$3>0 {count++} END {print count}')
+
+    echo -e "${sample}\t${mean_depth}\t${sd_depth}\t${snp_count}"
+done > ../mean_coverage_snps.txt
+```
+
