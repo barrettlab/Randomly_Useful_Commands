@@ -36,6 +36,11 @@ END {
 ## Calculate the mean +/- SD of coverage depth and number of variants for all .bam files in the current working directory
 
 ```bash
+
+conda info --envs  ## list all conda environments
+
+conda activate /usr/local/src/conda_envs/conda/envs/samtools  ## Activate samtools environment
+
 for bam in *.bam; do
     sample=$(basename "$bam" .bam)
     
