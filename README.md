@@ -5,7 +5,7 @@ Mostly useful one-liners or commands in bash/unix
 ```bash
 find fastp -type f -name '*R1.fastq' | parallel --bar "awk '(NR%4==1){count++} END {print \"{}\", count}' {}" | tee read_counts.txt | awk '{sum+=$2; sumsq+=$2*$2; n++} END {mean=sum/n; sd=sqrt(sumsq/n - mean^2); print "Mean:", mean, "SD:", sd}'
 ```
-## Same as aove but also include median, and remove "Undetermined" files
+## Same as above but also include median, and remove "Undetermined" files
 ```bash
 find fastp -type f -name '*R1.fastq' | grep -Ev "(Undetermined-S20_R1.fastq|Undetermined-S20_R2.fastq)" | parallel -j 80 --bar "awk '(NR%4==1){count++} END {print \"{}\", count}' {}" | tee read_counts.txt | awk '
 {counts[NR] = $2; sum+=$2; sumsq+=$2*$2; n++}
