@@ -35,7 +35,7 @@ END {
 
 ## Calculate the mean +/- SD of coverage depth and number of variants for all .bam files in the current working directory
 ### Calculates sites with depth >0, q20,30,40,50,60
-### q42 = uniquely mapped to a single place in the genome
+### Capped at q42: likely uniquely mapped to a single place in the genome
 
 ```bash
 
