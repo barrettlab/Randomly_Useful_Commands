@@ -26,3 +26,9 @@ END {
     print "Mean:", mean, "SD:", sd, "Median:", median;
 }'
 ```
+
+## Transfer files between servers with rsync
+```bash
+ rsync -av -P /data/ccorbett/reads/ fhernan@narval.calculcanada.ca:/home/fhernan/scratch/stiltgrass/
+
+```
