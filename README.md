@@ -35,7 +35,7 @@ END {
 
 ## Calculate the mean +/- SD of coverage depth and number of variants for all .bam files in the current working directory
 ### Calculates sites with depth >0, q20,30,40,50,60
-### q60 = uniquely mapped to a single place in the genome
+### q42 = uniquely mapped to a single place in the genome
 
 ```bash
 
@@ -67,10 +67,8 @@ for bam in *.bam; do
     sites_q20=$(samtools mpileup -Q 20 -f ../../reference/final_reference_assembly.fa "$bam" | awk '$6!~"^*$" {count++} END {print count}')
     sites_q30=$(samtools mpileup -Q 30 -f ../../reference/final_reference_assembly.fa "$bam" | awk '$6!~"^*$" {count++} END {print count}')
     sites_q40=$(samtools mpileup -Q 40 -f ../../reference/final_reference_assembly.fa "$bam" | awk '$6!~"^*$" {count++} END {print count}')
-    sites_q50=$(samtools mpileup -Q 50 -f ../../reference/final_reference_assembly.fa "$bam" | awk '$6!~"^*$" {count++} END {print count}')
-    sites_q60=$(samtools mpileup -Q 60 -f ../../reference/final_reference_assembly.fa "$bam" | awk '$6!~"^*$" {count++} END {print count}')
 
-    echo -e "${sample}\t${mean_depth}\t${sd_depth}\t${total_sites}\t${sites_q20}\t${sites_q30}\t${sites_q40}\t${sites_q50}\t${sites_q60}"
+    echo -e "${sample}\t${mean_depth}\t${sd_depth}\t${total_sites}\t${sites_q20}\t${sites_q30}\t${sites_q40}"
 done > ../mean_coverage_quality.txt
 ```
 
