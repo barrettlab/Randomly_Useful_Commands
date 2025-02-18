@@ -17,7 +17,7 @@ screen -S ml_analysis    # capital S
 
 # you can remove all the previous text from the screen with:
 
-clear # (then press enter)
+clear      # then press enter
 
 # reattach to the screen session, and you'll see everything since you left.
 
