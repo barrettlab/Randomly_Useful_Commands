@@ -1,6 +1,47 @@
 # Randomly_Useful_Commands
 Mostly useful one-liners or commands in bash/unix
 
+
+## Using 'screen' to set up long analyses that you can leave and come back to.
+
+```bash
+
+### The screen command will open a new terminal session. You can name the session anything. e.g.
+
+# Open a new screen session called 'ml_analysis'
+screen -S ml_analysis    # capital S
+
+# Run your command 
+
+# press 'ctrl+a+d' simultaneously (no plus signs) and then press enter, to detach from the session.
+
+# you can remove all the previous text from the screen with:
+
+clear # (then press enter)
+
+# reattach to the screen session, and you'll see everything since you left.
+
+screen -r ml_analysis   # lower-case r
+
+# press ctrl+a+d   # to detach again
+
+# check all open screen sessions and their status
+
+screen -ls
+
+# output:
+# (base) [cfb0001@LSB5211 phylonet]$ screen -ls
+# There are screens on:
+#         1306908.phylonetworks   (Detached)
+#         892003.qtgild   (Detached)
+# 2 Sockets in /run/screen/S-cfb0001.
+
+# read the manual page for screen (or any other bash/unix command)
+
+man screen   # press 'q' then press enter to exit manual.
+
+```
+
 ## Calculate the mean # of reads in all fastq files in a directory +/- SD
 ```bash
 find fastp -type f -name '*R1.fastq' | parallel --bar "awk '(NR%4==1){count++} END {print \"{}\", count}' {}" | tee read_counts.txt | awk '{sum+=$2; sumsq+=$2*$2; n++} END {mean=sum/n; sd=sqrt(sumsq/n - mean^2); print "Mean:", mean, "SD:", sd}'
