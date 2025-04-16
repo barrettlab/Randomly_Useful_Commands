@@ -113,3 +113,27 @@ for bam in *.bam; do
 done > ../mean_coverage_quality.txt
 ```
 
+## Count the number of reads for gzipped fastq files (R1 only) and create a tsv file with the output
+
+```bash
+#!/bin/bash
+
+# Output file
+output="read_counts.tsv"
+echo -e "filename\tread_count" > "$output"
+
+# Export a function to run in parallel
+count_reads() {
+    file="$1"
+    count=$(zcat "$file" | wc -l)
+    reads=$((count / 4))
+    echo -e "$(basename "$file")\t$reads"
+}
+
+export -f count_reads
+
+# Run in parallel over all _R1.fastq.gz files and append results to the output file
+parallel count_reads ::: reads/*_R1.fastq.gz >> "$output"
+```
+
+   
