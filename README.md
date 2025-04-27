@@ -136,4 +136,27 @@ export -f count_reads
 parallel count_reads ::: reads/*_R1.fastq.gz >> "$output"
 ```
 
-   
+# Upgrading R but keeping all packages from previous version
+```{r}
+
+# Save a list
+installed_packages <- installed.packages()[, "Package"]
+save(installed_packages, file = "installed_packages.RData")
+
+# Install and update R. Do this from Rgui and not Rstudio!
+install.packages("installr")
+library(installr)
+updateR()
+
+# After updating R: Reload your packages. If R asks about missing libraries:
+
+# Reinstall them easily 
+load("installed_packages.RData")
+
+# Reinstall only missing packages
+new_packages <- setdiff(installed_packages, installed.packages()[,"Package"])
+
+if(length(new_packages)) install.packages(new_packages) # Upgrade to newest package versions. This make take a while!
+```
+
+
