@@ -155,8 +155,19 @@ load("installed_packages.RData")
 
 # Reinstall only missing packages
 new_packages <- setdiff(installed_packages, installed.packages()[,"Package"])
-
 if(length(new_packages)) install.packages(new_packages) # Upgrade to newest package versions. This make take a while!
+```
+
+# Calculate the percent missing data for a fasta alignment
+
+```bash
+# Missing data using seqtk
+
+total=$(seqkit seq -i my_alignment.fasta | grep -v '^>' | tr -d '\n' | wc -c)
+missing=$(seqkit seq -i my_alignment.fasta | grep -v '^>' | tr -cd '\-\?N' | wc -c)
+
+pct=$(echo "scale=2; 100 * $missing / $total" | bc)
+echo "Missing data percentage: $pct%"
 ```
 
 
