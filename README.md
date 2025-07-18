@@ -70,7 +70,9 @@ END {
 
 ## Transfer files between servers with rsync
 ```bash
- rsync -av -P /data/ccorbett/reads/ fhernan@narval.calculcanada.ca:/home/fhernan/scratch/stiltgrass/
+# transfer from /data/craigdata/reads/ on current server to /home/craignewfolder/data/reads/ on remote server
+
+ rsync -av -P /data/craigdata/reads/ craigbarrett@servername.wvu.edu:/home/craignewfolder/data/reads/
 
 ```
 
