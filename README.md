@@ -172,4 +172,68 @@ pct=$(echo "scale=2; 100 * $missing / $total" | bc)
 echo "Missing data percentage: $pct%"
 ```
 
+# Summarize .iqtree output with BIC and BIC weights analysis of a dataset under different models
+
+```bash
+
+# Code to extract information from several iqtree runs on the same dataset and compare them with BIC and BIC with
+
+# For example, lets say we ran 5 analyses under different models in iqtree:
+# iqtree2 -s accD_mafft_macse_NT.fasta -m GTR+R -bb 1000 -nt 50  --prefix gtr
+# iqtree2 -s accD_mafft_macse_NT.fasta -m GTR+FO+H2 -bb 1000 -T 50  --prefix ghost_linked2
+# iqtree2 -s accD_mafft_macse_NT.fasta -m GTR+FO+H3 -bb 1000 -T 50  --prefix ghost_linked3
+# iqtree2 -s accD_mafft_macse_NT.fasta -m GTR+FO*H2 -bb 1000 -T 50  --prefix ghost_unlinked2
+# iqtree2 -s accD_mafft_macse_NT.fasta -m GTR+FO*H3 -bb 1000 -T 50  --prefix ghost_unlinked3
+
+# 1) Make the CSV
+printf "file,n_taxa,n_sites,n_pars_inf,logL,n_params,AIC,AICc,BIC\n" > iqtree_model_summary.csv
+
+# 2) Loop through all .iqtree output files in the current directory
+for f in *.iqtree; do
+  n_taxa=$(grep -m1 "Input data:" "$f" | sed -E 's/.*Input data: *([0-9]+) sequences.*/\1/')
+  n_sites=$(grep -m1 "Input data:" "$f" | sed -E 's/.*with *([0-9]+) nucleotide sites.*/\1/')
+  n_pars=$(grep -m1 "Number of parsimony informative sites:" "$f" | sed -E 's/.*: *([0-9]+).*/\1/')
+  logL=$(grep -m1 "Log-likelihood of the tree:" "$f" | sed -E 's/.*: *([-0-9.eE+]+).*/\1/')
+  n_par=$(grep -m1 "Number of free parameters" "$f" | sed -E 's/.*: *([0-9]+).*/\1/')
+  AIC=$(grep -m1 "Akaike information criterion (AIC) score:" "$f" | sed -E 's/.*: *([-0-9.eE+]+).*/\1/')
+  AICc=$(grep -m1 "Corrected Akaike information criterion (AICc) score:" "$f" | sed -E 's/.*: *([-0-9.eE+]+).*/\1/')
+  BIC=$(grep -m1 "Bayesian information criterion (BIC) score:" "$f" | sed -E 's/.*: *([-0-9.eE+]+).*/\1/')
+
+# 3) Print the captured text to the csv file
+  printf "%s,%s,%s,%s,%s,%s,%s,%s,%s\n" \
+    "$f" "$n_taxa" "$n_sites" "$n_pars" "$logL" "$n_par" "$AIC" "$AICc" "$BIC" \
+    >> iqtree_model_summary.csv
+done
+
+# 4) Add wBIC column (BIC weights) -> new file, then replace
+awk -F',' '
+BEGIN { OFS="," }
+NR==1 {
+  print $0, "wBIC"
+  next
+}
+{
+  bic[NR] = $9 + 0
+  line[NR] = $0
+  if (NR==2 || bic[NR] < minbic) minbic = bic[NR]
+  n = NR
+}
+END {
+  # compute denominator
+  denom = 0
+  for (i=2; i<=n; i++) {
+    w[i] = exp(-0.5 * (bic[i] - minbic))
+    denom += w[i]
+  }
+  # print lines with normalized weights
+  for (i=2; i<=n; i++) {
+    printf "%s,%.10g\n", line[i], (w[i]/denom)
+  }
+}
+' iqtree_model_summary.csv > iqtree_model_summary_wBIC.csv
+
+mv iqtree_model_summary_wBIC.csv iqtree_model_summary.csv
+
+```
+
 
