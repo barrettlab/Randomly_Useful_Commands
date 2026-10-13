@@ -42,6 +42,19 @@ man screen   # press 'q' then press enter to exit manual.
 
 ```
 
+## Download files directly from Illumina BaseSpace to a server
+### Recommend using screen or nohup to run in background
+```bash
+mkdir -p /Data/cbarrett/stiltgrass_ref_panel/reads
+cd /Data/cbarrett/stiltgrass_ref_panel/reads
+bs download project -n "Barrett_Cam_Redemux_20260228" -o . --include="*.fastq.gz"
+
+# Once the download finishes, pull all .fastq.gz file out of the subfolders and delete the empty subfolders
+mv */*.fastq.gz .
+rmdir */
+
+```
+
 ## Calculate the mean # of reads in all fastq files in a directory +/- SD
 ```bash
 find fastp -type f -name '*R1.fastq' | parallel --bar "awk '(NR%4==1){count++} END {print \"{}\", count}' {}" | tee read_counts.txt | awk '{sum+=$2; sumsq+=$2*$2; n++} END {mean=sum/n; sd=sqrt(sumsq/n - mean^2); print "Mean:", mean, "SD:", sd}'
